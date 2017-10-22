@@ -1,11 +1,15 @@
 package com.nts.tcm;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -67,8 +71,6 @@ public class Controller extends JFrame implements ActionListener {
 		setMinimumSize(new Dimension(minWidth, minHeight));
 		setBounds(initialXPosition, initialYPosition, initialWidth, initialHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// setLayout(new FlowLayout());
-		// setLayout(new GridLayout(4, 3));
 		// 메뉴바
 		menuBar = new JMenuBar();
 		fileMenu = new JMenu(fileMenuText);
@@ -77,20 +79,24 @@ public class Controller extends JFrame implements ActionListener {
 		fileMenu.add(new JMenuItem("종료"));
 		menuBar.add(fileMenu);
 		setJMenuBar(menuBar);
-		
-		
 		// 텍스트 영역
+		JPanel a = new JPanel();
+		a.setLayout(new GridLayout(1, 1));
+		a.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
+		this.add("North", a);
 		expressionField = new JTextField();
 		expressionField.setToolTipText(expressionToolTip);
-		this.add("North", expressionField);
-		// AND 버튼
+		a.add(expressionField);
+		// 버튼 영역
 		panel = new JPanel();
-		panel.setLayout(new GridLayout(2, 4));
-		this.add(panel);
+		panel.setLayout(new GridLayout(2, 4, 10, 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+		this.add("Center", panel);
+		// AND 버튼
 		andBtn = new JButton(andBtnText);
 		andBtn.addActionListener(this);
 		andBtn.setToolTipText(andBtnToolTip);
-		panel.add("Center", andBtn);
+		panel.add(andBtn);
 		// OR 버튼
 		orBtn = new JButton(orBtnText);
 		orBtn.addActionListener(this);
@@ -128,10 +134,14 @@ public class Controller extends JFrame implements ActionListener {
 		mcdcBtn.setToolTipText(mcdcBtnTollTip);
 		panel.add(mcdcBtn);
 		// 표
+		JPanel b = new JPanel();
+		b.setLayout(new GridLayout(1, 1));
+		b.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+		this.add("South", b);
 		initialTable = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(initialTable);
 		JScrollPane scrollPane = new JScrollPane(table);
-		this.add("South", scrollPane);
+		b.add(scrollPane);
 		setVisible(true);
 	}
 
