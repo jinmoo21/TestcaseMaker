@@ -1,100 +1,189 @@
 package com.nts.tcm;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
-public class Controller extends JFrame {
+public class Controller extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 4349430279354340298L;
-	private static final int initialXPosition = 100;
-	private static final int initialYPosition = 100;
-	private static final int minWidth = 250;
-	private static final int minHeight = 500;
-	private static final int initialWidth = 500;
-	private static final int initialHeight = 750;
-	private static final String andBtnText = "AND";
-	private static final String andBtnToolTip = "AND ¿¬»êÀ» Ãß°¡ÇÕ´Ï´Ù.";
-	private static final String orBtnText = "OR";
-	private static final String orBtnToolTip = "OR ¿¬»êÀ» Ãß°¡ÇÕ´Ï´Ù.";
-	private static final String leftParenthesisBtnText = "(";
-	private static final String leftParenthesisBtnToolTip = "( À» Ãß°¡ÇÕ´Ï´Ù.";
-	private static final String rightParenthesisBtnText = ")";
-	private static final String rightParenthesisBtnToolTip = ") À» Ãß°¡ÇÕ´Ï´Ù.";
-	private static final String clearBtnText = "CLEAR";
-	private static final String clearBtnTollTip = "ÀÛ¼ºÇÑ Ç¥Çö½ÄÀ» ÃÊ±âÈ­ÇÕ´Ï´Ù.";
-	private static final String cancelBtnText = "x";
-	private static final String cancelBtnTollTip = "Áö¿ì±â";
-	private static final String mccBtnText = "MCC";
-	private static final String mccBtnTollTip = "Ç¥Çö½Ä¿¡ ´ëÇÑ MCC¸¦ ±¸ÇÕ´Ï´Ù.";
-	private static final String mcdcBtnText = "MC/DC";
-	private static final String mcdcBtnTollTip = "Ç¥Çö½Ä¿¡ ´ëÇÑ MC/DC¸¦ ±¸ÇÕ´Ï´Ù.";
-	private static final String[] columnNames = { "1", "0" };
-	public Object rowData[][] = {
-			{ "100", "000" },
-			{ "010", "000" },
-			{ "001", "000" },
-			{ "100", "000" },
-			{ "010", "000" },
-			{ "001", "000" },
-			{ "100", "000" },
-			{ "010", "000" },
-			{ "001", "000" },
-	};
-	
+	private final int initialXPosition = 100;
+	private final int initialYPosition = 100;
+	private final int minWidth = 300;
+	private final int minHeight = 600;
+	private final int initialWidth = 300;
+	private final int initialHeight = 600;
+	private JMenuBar menuBar;
+	private JMenu fileMenu;
+	private final String fileMenuText = "íŒŒì¼";
+	private JTextField expressionField;
+	private final String expressionToolTip = "í‘œí˜„ì‹ì„ ìž…ë ¥í•˜ê±°ë‚˜ ë²„íŠ¼ì„ ëˆŒëŸ¬ í‘œí˜„ì‹ì„ ìž‘ì„±í•˜ì„¸ìš”.";
+	private char baseCondition = 'A';
+	private JPanel panel;
+	private JButton andBtn;
+	private final String andBtnText = "AND";
+	private final String andBtnToolTip = "AND ì—°ì‚°ì„ ì¶”ê°€í•©ë‹ˆë‹¤.";
+	private JButton orBtn;
+	private final String orBtnText = "OR";
+	private final String orBtnToolTip = "OR ì—°ì‚°ì„ ì¶”ê°€í•©ë‹ˆë‹¤..";
+	private JButton leftParenthesisBtn;
+	private final String leftParenthesisBtnText = "(";
+	private final String leftParenthesisBtnToolTip = "( ì„ ì¶”ê°€í•©ë‹ˆë‹¤.";
+	private JButton rightParenthesisBtn;
+	private final String rightParenthesisBtnText = ")";
+	private final String rightParenthesisBtnToolTip = ") ì„ ì¶”ê°€í•©ë‹ˆë‹¤.";
+	private JButton clearBtn;
+	private final String clearBtnText = "CLEAR";
+	private final String clearBtnTollTip = "ìž‘ì„±í•œ í‘œí˜„ì‹ì„ ì´ˆê¸°í™”í•©ë‹ˆë‹¤.";
+	private JButton cancelBtn;
+	private final String cancelBtnText = "x";
+	private final String cancelBtnTollTip = "ì§€ìš°ê¸°";
+	private JButton mccBtn;
+	private final String mccBtnText = "MCC";
+	private final String mccBtnTollTip = "í‘œí˜„ì‹ì— ëŒ€í•œ MCC ì„ êµ¬í•©ë‹ˆë‹¤.";
+	private JButton mcdcBtn;
+	private final String mcdcBtnText = "MC/DC";
+	private final String mcdcBtnTollTip = "í‘œí˜„ì‹ì— ëŒ€í•œ MC/DC ì„ êµ¬í•©ë‹ˆë‹¤.";
+	private DefaultTableModel initialTable;
+	private final String[] columnNames = { "1", "0" };
+	public Object rowData[][];
+	private boolean isMCCCalculated;
+
 	public Controller() {
 		// Frame
 		super("TestCase Maker");
 		setMinimumSize(new Dimension(minWidth, minHeight));
 		setBounds(initialXPosition, initialYPosition, initialWidth, initialHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(new FlowLayout());
-		// ÅØ½ºÆ® ¿µ¿ª
-		JTextField expressionField = new JTextField(4);
-		this.add(expressionField);
-		// AND ¹öÆ°
-		JButton andBtn = new JButton(andBtnText);
+		// setLayout(new FlowLayout());
+		// setLayout(new GridLayout(4, 3));
+		// ë©”ë‰´ë°”
+		menuBar = new JMenuBar();
+		fileMenu = new JMenu(fileMenuText);
+		fileMenu.add(new JMenuItem("ì €ìž¥"));
+		fileMenu.addSeparator();
+		fileMenu.add(new JMenuItem("ì¢…ë£Œ"));
+		menuBar.add(fileMenu);
+		setJMenuBar(menuBar);
+		
+		
+		// í…ìŠ¤íŠ¸ ì˜ì—­
+		expressionField = new JTextField();
+		expressionField.setToolTipText(expressionToolTip);
+		this.add("North", expressionField);
+		// AND ë²„íŠ¼
+		panel = new JPanel();
+		panel.setLayout(new GridLayout(2, 4));
+		this.add(panel);
+		andBtn = new JButton(andBtnText);
+		andBtn.addActionListener(this);
 		andBtn.setToolTipText(andBtnToolTip);
-		this.add(andBtn);
-		// OR ¹öÆ°
-		JButton orBtn = new JButton(orBtnText);
+		panel.add("Center", andBtn);
+		// OR ë²„íŠ¼
+		orBtn = new JButton(orBtnText);
+		orBtn.addActionListener(this);
 		orBtn.setToolTipText(orBtnToolTip);
-		this.add(orBtn);
-		// ( ¹öÆ°
-		JButton leftParenthesisBtn = new JButton(leftParenthesisBtnText);
+		panel.add(orBtn);
+		// ( ë²„íŠ¼
+		leftParenthesisBtn = new JButton(leftParenthesisBtnText);
+		leftParenthesisBtn.addActionListener(this);
 		leftParenthesisBtn.setToolTipText(leftParenthesisBtnToolTip);
-		this.add(leftParenthesisBtn);
-		// ) ¹öÆ°
-		JButton rightParenthesisBtn = new JButton(rightParenthesisBtnText);
+		panel.add(leftParenthesisBtn);
+		// ) ë²„íŠ¼
+		rightParenthesisBtn = new JButton(rightParenthesisBtnText);
+		rightParenthesisBtn.addActionListener(this);
 		rightParenthesisBtn.setToolTipText(rightParenthesisBtnToolTip);
-		this.add(rightParenthesisBtn);
-		// ÃÊ±âÈ­ ¹öÆ°
-		JButton clearBtn = new JButton(clearBtnText);
+		panel.add(rightParenthesisBtn);
+		// ì´ˆê¸°í™” ë²„íŠ¼
+		clearBtn = new JButton(clearBtnText);
+		clearBtn.addActionListener(this);
 		clearBtn.setToolTipText(clearBtnTollTip);
-		this.add(clearBtn);
-		// Áö¿ì±â ¹öÆ°
-		JButton cancelBtn = new JButton(cancelBtnText);
+		panel.add(clearBtn);
+		// ì§€ìš°ê¸° ë²„íŠ¼
+		cancelBtn = new JButton(cancelBtnText);
+		cancelBtn.addActionListener(this);
 		cancelBtn.setToolTipText(cancelBtnTollTip);
-		this.add(cancelBtn);
-		// MCC ¹öÆ°
-		JButton mccBtn = new JButton(mccBtnText);
+		panel.add(cancelBtn);
+		// MCC ë²„íŠ¼
+		mccBtn = new JButton(mccBtnText);
+		mccBtn.addActionListener(this);
 		mccBtn.setToolTipText(mccBtnTollTip);
-		this.add(mccBtn);
-		// MC/DC ¹öÆ°
-		JButton mcdcBtn = new JButton(mcdcBtnText);
+		panel.add(mccBtn);
+		// MC/DC ë²„íŠ¼
+		mcdcBtn = new JButton(mcdcBtnText);
+		mcdcBtn.addActionListener(this);
+		mcdcBtn.addActionListener(this);
 		mcdcBtn.setToolTipText(mcdcBtnTollTip);
-		this.add(mcdcBtn);
-		// Ç¥
-		DefaultTableModel initialTable = new DefaultTableModel(rowData, columnNames);
+		panel.add(mcdcBtn);
+		// í‘œ
+		initialTable = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(initialTable);
 		JScrollPane scrollPane = new JScrollPane(table);
-		this.add(scrollPane);
+		this.add("South", scrollPane);
 		setVisible(true);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		StringBuilder sb = new StringBuilder(expressionField.getText());
+		if (!isMCCCalculated && e.getSource().equals(mccBtn)) {
+			Parser b = new Parser(expressionField.getText());
+			b.parseExpression();
+			MCC a =  new MCC(b.getPostOrder(), b.getOperandSize());
+			a.setTable(a.getConditions(), a.getResult());
+			int size = a.getTrueTable().size() >= a.getFalseTable().size() ? a.getTrueTable().size() : a.getFalseTable().size();
+			for (int i = 0; i < size; ++i) {
+				Vector<Item> v = new Vector<Item>();
+				try {
+					v.addElement(a.getTrueTable().get(i));
+				} catch (IndexOutOfBoundsException e1) {
+					v.add(null);
+				}
+				try {
+					v.addElement(a.getFalseTable().get(i));
+				} catch (IndexOutOfBoundsException e1) {
+					v.add(null);
+				}
+				initialTable.addRow(v);
+			}
+			isMCCCalculated = true;
+		} else if (e.getSource().equals(mcdcBtn)) {
+			
+		} else if (e.getSource().equals(andBtn)) {
+			if (sb.length() == 0) {
+				sb.append(baseCondition);
+			}
+			sb.append("&");
+			sb.append(++baseCondition);
+		} else if (e.getSource().equals(orBtn)) {
+			if (sb.length() == 0) {
+				sb.append(baseCondition);
+			}
+			sb.append("|");
+			sb.append(++baseCondition);
+		} else if (e.getSource().equals(leftParenthesisBtn)) {
+			sb.append("(");
+		} else if (e.getSource().equals(rightParenthesisBtn)) {
+			sb.append(")");
+		} else if (e.getSource().equals(clearBtn)) {
+			sb.delete(0, sb.length());
+		} else if (e.getSource().equals(cancelBtn)) {
+			if (sb.length() != 0) {
+				sb.deleteCharAt(sb.length() - 1);
+			}
+		}
+		expressionField.setText(sb.toString());
 	}
 }
