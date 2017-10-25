@@ -3,6 +3,7 @@ package com.nts.tcm;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,6 +87,7 @@ public class Controller extends JFrame implements ActionListener {
 		this.add("North", a);
 		expressionField = new JTextField();
 		expressionField.setToolTipText(expressionToolTip);
+		expressionField.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
 		a.add(expressionField);
 		// 버튼 영역
 		panel = new JPanel();
