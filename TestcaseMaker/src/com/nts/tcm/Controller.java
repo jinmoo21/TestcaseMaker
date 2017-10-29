@@ -94,6 +94,7 @@ public class Controller extends JFrame implements ActionListener {
 		topPanel.setLayout(new GridLayout(1, 1));
 		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 		this.add("North", topPanel);
+		// 텍스트필드
 		expressionField = new JTextField();
 		expressionField.setToolTipText(expressionToolTip);
 		expressionField.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
@@ -144,11 +145,12 @@ public class Controller extends JFrame implements ActionListener {
 		mcdcBtn.addActionListener(this);
 		mcdcBtn.setToolTipText(mcdcBtnTollTip);
 		centetPanel.add(mcdcBtn);
-		// 표
+		// 표 영역
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1, 1));
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 		this.add("South", bottomPanel);
+		// 표
 		initialTable = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(initialTable);
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -159,7 +161,7 @@ public class Controller extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		StringBuilder sb = new StringBuilder(expressionField.getText());
-		if (e.getSource().equals(mccBtn)) {
+		if (e.getSource().equals(mccBtn) && sb.length() != 0) {
 			Parser b = new Parser(expressionField.getText());
 			b.parseExpression();
 			MCC a =  new MCC(b.getPostOrder(), b.getOperandSize());
@@ -179,7 +181,7 @@ public class Controller extends JFrame implements ActionListener {
 				}
 				initialTable.addRow(v);
 			}
-		} else if (e.getSource().equals(mcdcBtn)) {
+		} else if (e.getSource().equals(mcdcBtn) && sb.length() != 0) {
 			
 		} else if (e.getSource().equals(andBtn)) {
 			if (sb.length() == 0) {
