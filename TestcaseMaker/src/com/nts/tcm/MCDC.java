@@ -76,7 +76,7 @@ public class MCDC {
 		}
 	}
 	
-	public void foo3() {
+/*	public void foo3() {
 		oneSet = new HashSet<String[]>();
 		for (int i = 0; i < operandSize; ++i) {
 			oneSet.add(oneTable[i]);
@@ -102,5 +102,5 @@ public class MCDC {
 			System.out.println();
 		}
 		System.out.println();
-	}
+	}*/
 }
