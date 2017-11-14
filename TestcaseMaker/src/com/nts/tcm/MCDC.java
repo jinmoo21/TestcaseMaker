@@ -1,20 +1,19 @@
 package com.nts.tcm;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class MCDC {
 	private String expression;
-	private int operandSize = 2;
+	private int operandSize;
 	private String[][] oneTable;
 	private String[][] zeroTable;
 	
-	Set<String[]> oneSet;
-	Set<String[]> zeroSet;
-	
-	MCDC(String expression) {
-		this.expression = expression; 
+	MCDC(String expression, int operandSize) {
+		this.expression = expression;
+		this.operandSize = operandSize;
 		oneTable = new String[this.operandSize][this.operandSize];
 		zeroTable = new String[this.operandSize][this.operandSize];
 	}
@@ -29,6 +28,9 @@ public class MCDC {
 	public void voo() {
 		for (int i = 0; i < operandSize; ++i) {
 			for (int j = 0; j < operandSize; ++j) {
+				if (oneTable[i] == null) {
+					continue;
+				}
 				System.out.print(oneTable[i][j] + " ");
 			}
 			System.out.println();
@@ -36,6 +38,9 @@ public class MCDC {
 		System.out.println();
 		for (int i = 0; i < operandSize; ++i) {
 			for (int j = 0; j < operandSize; ++j) {
+				if (zeroTable[i] == null) {
+					continue;
+				}
 				System.out.print(zeroTable[i][j] + " ");
 			}
 			System.out.println();
@@ -72,35 +77,24 @@ public class MCDC {
 					zeroTable[i][j] = "0";
 				}
 			}
-				
 		}
 	}
 	
-/*	public void foo3() {
-		oneSet = new HashSet<String[]>();
-		for (int i = 0; i < operandSize; ++i) {
-			oneSet.add(oneTable[i]);
+	public void foo3() {
+		for (int i = 0; i < operandSize - 1; ++i) {
+			for (int j = i + 1; j < operandSize; ++j) {
+				if (Arrays.equals(oneTable[i], oneTable[j])) {
+					oneTable[j] = null;
+				}
+			}
 		}
-		zeroSet = new HashSet<String[]>();
-		for (int i = 0; i < operandSize; ++i) {
-			zeroSet.add(zeroTable[i]);
+		for (int i = 0; i < operandSize - 1; ++i) {
+			for (int j = i + 1; j < operandSize; ++j) {
+				if (Arrays.equals(zeroTable[i], zeroTable[j])) {
+					zeroTable[j] = null;
+				}
+			}
 		}
 	}
-	
-	public void voo2() {
-		for (String[] a : oneSet) {
-			for (int i = 0; i < operandSize; ++i) {
-				System.out.print(a[i] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-		for (String[] a : zeroSet) {
-			for (int i = 0; i < operandSize; ++i) {
-				System.out.print(a[i] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-	}*/
+
 }

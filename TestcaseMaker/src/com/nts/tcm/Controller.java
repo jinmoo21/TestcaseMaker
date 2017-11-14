@@ -26,9 +26,9 @@ public class Controller extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 4349430279354340298L;
 	private final int initialXPosition = 100;
 	private final int initialYPosition = 100;
-	private final int minWidth = 300;
+	private final int minWidth = 400;
 	private final int minHeight = 600;
-	private final int initialWidth = 300;
+	private final int initialWidth = 400;
 	private final int initialHeight = 600;
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
@@ -162,26 +162,38 @@ public class Controller extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		StringBuilder sb = new StringBuilder(expressionField.getText());
 		if (e.getSource().equals(mccBtn) && sb.length() != 0) {
-			Parser b = new Parser(expressionField.getText());
-			b.parseExpression();
-			MCC a =  new MCC(b.getPostOrder(), b.getOperandSize());
-			a.setTable(a.getConditions(), a.getResult());
-			int size = a.getTrueTable().size() >= a.getFalseTable().size() ? a.getTrueTable().size() : a.getFalseTable().size();
+			Parser parser = new Parser(expressionField.getText());
+			parser.parseExpression();
+			MCC mcc =  new MCC(parser.getPostOrder(), parser.getOperandSize());
+			mcc.setTable(mcc.getConditions(), mcc.getResult());
+			int size = mcc.getTrueTable().size() >= mcc.getFalseTable().size() ? mcc.getTrueTable().size() : mcc.getFalseTable().size();
 			for (int i = 0; i < size; ++i) {
 				Vector<Item> v = new Vector<Item>();
 				try {
-					v.addElement(a.getTrueTable().get(i));
+					v.addElement(mcc.getTrueTable().get(i));
 				} catch (IndexOutOfBoundsException e1) {
 					v.add(null);
 				}
 				try {
-					v.addElement(a.getFalseTable().get(i));
+					v.addElement(mcc.getFalseTable().get(i));
 				} catch (IndexOutOfBoundsException e1) {
 					v.add(null);
 				}
 				initialTable.addRow(v);
 			}
 		} else if (e.getSource().equals(mcdcBtn) && sb.length() != 0) {
+			Parser parser = new Parser(expressionField.getText());
+			parser.parseExpression();
+			MCDC mcdc = new MCDC(expressionField.getText(), parser.getOperandSize());
+			mcdc.foo1();
+			mcdc.voo();
+			mcdc.foo2();
+			mcdc.voo();
+			mcdc.foo3();
+			mcdc.voo();
+			
+			
+			
 			
 		} else if (e.getSource().equals(andBtn)) {
 			if (sb.length() == 0) {
