@@ -85,24 +85,19 @@ public class Parser {
 		return operandSize;
 	}
 	
-	public void foo4() {
-		boolean flag = false;;
-		int oprndSize = 0;
+	public void removeParenthesis() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < expression.length(); ++i) {
 			if (expression.substring(i, i + 1).equals("(")) {
-				flag = true;
-				System.out.println("괄호 시작" + i);
 			} else if (expression.substring(i, i + 1).equals(")")) {
-				flag = false;
-				System.out.println("괄호 끝" + i);
 			} else {
-				if (flag && expression.substring(i, i + 1).equals("&")) {
-				}
-				
 				sb.append(expression.substring(i, i + 1));
 			}
 		}
 		expression = sb.toString();
+	}
+	
+	public String getExpression() {
+		return expression;
 	}
 }

@@ -1,8 +1,6 @@
 package com.nts.tcm;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -20,8 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class Controller extends JFrame implements ActionListener {
@@ -187,8 +182,9 @@ public class Controller extends JFrame implements ActionListener {
 		} else if (e.getSource().equals(mcdcBtn) && sb.length() != 0) {
 			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
+			parser.removeParenthesis();
 			parser.parseExpression();
-			MCDC mcdc = new MCDC(expressionField.getText(), parser.getOperandSize());
+			MCDC mcdc = new MCDC(parser.getExpression(), parser.getOperandSize());
 			mcdc.setDiagonalValue();
 			mcdc.setNeutralValue();
 			mcdc.setDistinct();
