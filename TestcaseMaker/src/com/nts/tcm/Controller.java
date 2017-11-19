@@ -20,16 +20,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class Controller extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 4349430279354340298L;
 	private final int initialXPosition = 100;
 	private final int initialYPosition = 100;
-	private final int minWidth = 400;
-	private final int minHeight = 600;
-	private final int initialWidth = 400;
-	private final int initialHeight = 600;
+	private final int minWidth = 500;
+	private final int minHeight = 650;
+	private final int initialWidth = 500;
+	private final int initialHeight = 650;
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private final String fileMenuText = "파일";
@@ -58,7 +60,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final String clearBtnText = "CLEAR";
 	private final String clearBtnTollTip = "작성한 표현식을 초기화합니다.";
 	private JButton cancelBtn;
-	private final String cancelBtnText = "x";
+	private final String cancelBtnText = "BACKSPACE";
 	private final String cancelBtnTollTip = "지우기";
 	private JButton mccBtn;
 	private final String mccBtnText = "MCC";
@@ -142,13 +144,13 @@ public class Controller extends JFrame implements ActionListener {
 		// MC/DC 버튼
 		mcdcBtn = new JButton(mcdcBtnText);
 		mcdcBtn.addActionListener(this);
-		mcdcBtn.addActionListener(this);
 		mcdcBtn.setToolTipText(mcdcBtnTollTip);
 		centetPanel.add(mcdcBtn);
 		// 표 영역
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1, 1));
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
+		bottomPanel.setSize(new Dimension(100, 100));
 		this.add("South", bottomPanel);
 		// 표
 		initialTable = new DefaultTableModel(rowData, columnNames);
@@ -162,6 +164,7 @@ public class Controller extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		StringBuilder sb = new StringBuilder(expressionField.getText());
 		if (e.getSource().equals(mccBtn) && sb.length() != 0) {
+			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
 			parser.parseExpression();
 			MCC mcc =  new MCC(parser.getPostOrder(), parser.getOperandSize());
@@ -182,37 +185,47 @@ public class Controller extends JFrame implements ActionListener {
 				initialTable.addRow(v);
 			}
 		} else if (e.getSource().equals(mcdcBtn) && sb.length() != 0) {
+			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
 			parser.parseExpression();
 			MCDC mcdc = new MCDC(expressionField.getText(), parser.getOperandSize());
-			mcdc.foo1();
-			mcdc.voo();
-			mcdc.foo2();
-			mcdc.voo();
-			mcdc.foo3();
-			mcdc.voo();
-			
-			
-			
-			
+			mcdc.setDiagonalValue();
+			mcdc.setNeutralValue();
+			mcdc.setDistinct();
+			int size = mcdc.getTrueTable().size() >= mcdc.getFalseTable().size() ? mcdc.getTrueTable().size() : mcdc.getFalseTable().size();
+			for (int i = 0; i < size; ++i) {
+				Vector<Item> v = new Vector<Item>();
+				try {
+					v.addElement(mcdc.getTrueTable().get(i));
+				} catch (IndexOutOfBoundsException e1) {
+					v.add(null);
+				}
+				try {
+					v.addElement(mcdc.getFalseTable().get(i));
+				} catch (IndexOutOfBoundsException e1) {
+					v.add(null);
+				}
+				initialTable.addRow(v);
+			}
 		} else if (e.getSource().equals(andBtn)) {
 			if (sb.length() == 0) {
 				sb.append(baseCondition);
 			}
 			sb.append("&");
-			sb.append(++baseCondition);
+			sb.append(baseCondition);
 		} else if (e.getSource().equals(orBtn)) {
 			if (sb.length() == 0) {
 				sb.append(baseCondition);
 			}
 			sb.append("|");
-			sb.append(++baseCondition);
+			sb.append(baseCondition);
 		} else if (e.getSource().equals(leftParenthesisBtn)) {
 			sb.append("(");
 		} else if (e.getSource().equals(rightParenthesisBtn)) {
 			sb.append(")");
 		} else if (e.getSource().equals(clearBtn)) {
 			sb.delete(0, sb.length());
+			initialTable.setNumRows(0);
 		} else if (e.getSource().equals(cancelBtn)) {
 			if (sb.length() != 0) {
 				sb.deleteCharAt(sb.length() - 1);
