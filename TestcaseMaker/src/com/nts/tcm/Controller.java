@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 public class Controller extends JFrame implements ActionListener {
@@ -71,6 +73,13 @@ public class Controller extends JFrame implements ActionListener {
 	public Controller() {
 		// Frame
 		super("TestCase Maker");
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		setMinimumSize(new Dimension(minWidth, minHeight));
 		setBounds(initialXPosition, initialYPosition, initialWidth, initialHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -158,6 +167,8 @@ public class Controller extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		StringBuilder sb = new StringBuilder(expressionField.getText());
+		int beforeLength = sb.length();
+		int caretPosition = expressionField.getCaretPosition();
 		if (e.getSource().equals(mccBtn) && sb.length() != 0) {
 			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
@@ -204,31 +215,64 @@ public class Controller extends JFrame implements ActionListener {
 				initialTable.addRow(v);
 			}
 		} else if (e.getSource().equals(andBtn)) {
-			if (sb.length() == 0) {
-				sb.append(baseCondition);
+			if (caretPosition == 0) {
+				sb.insert(caretPosition, baseCondition);
+				sb.insert(caretPosition + 1, "&");
+				if (sb.length() == 2) {
+					sb.append(baseCondition);
+				}
+			} else if ((sb.charAt(caretPosition - 1) >= 65 && sb.charAt(caretPosition - 1) < 91) || (sb.charAt(caretPosition - 1) >= 97 && sb.charAt(caretPosition - 1) < 123)) {
+				sb.insert(caretPosition, "&");
+				sb.insert(caretPosition + 1, baseCondition);
 			}
-			sb.append("&");
-			sb.append(baseCondition);
 		} else if (e.getSource().equals(orBtn)) {
-			if (sb.length() == 0) {
-				sb.append(baseCondition);
+			if (caretPosition == 0) {
+				sb.insert(caretPosition, baseCondition);
+				sb.insert(caretPosition + 1, "|");
+				if (sb.length() == 2) {
+					sb.append(baseCondition);
+				}
+			} else if ((sb.charAt(caretPosition - 1) >= 65 && sb.charAt(caretPosition - 1) < 91) || (sb.charAt(caretPosition - 1) >= 97 && sb.charAt(caretPosition - 1) < 123)) {
+				sb.insert(caretPosition, "|");
+				sb.insert(caretPosition + 1, baseCondition);
 			}
-			sb.append("|");
-			sb.append(baseCondition);
 		} else if (e.getSource().equals(leftParenthesisBtn)) {
-			sb.append("(");
+			sb.insert(caretPosition, "(");
 		} else if (e.getSource().equals(rightParenthesisBtn)) {
-			sb.append(")");
+			sb.insert(caretPosition, ")");
 		} else if (e.getSource().equals(clearBtn)) {
-			sb.delete(0, sb.length());
-			initialTable.setNumRows(0);
+//			sb.setLength(0);
+//			initialTable.setNumRows(0);
+/*
+ * wrap an expression in parenthesis
+*/
+			String selectedText = expressionField.getSelectedText();
+			if (selectedText != null) {
+				int start = expressionField.getSelectionStart();
+				int end = expressionField.getSelectionEnd();
+				sb.replace(start, end, "(" + selectedText + ")");
+			}
 		} else if (e.getSource().equals(cancelBtn)) {
-			if (sb.length() != 0) {
-				sb.deleteCharAt(sb.length() - 1);
+			if (caretPosition > 0) {
+				sb.deleteCharAt(caretPosition - 1);
 			}
 		} else if (e.getSource().equals(exitBtn)) {
 			System.exit(0);
 		}
 		expressionField.setText(sb.toString());
+		expressionField.requestFocus();
+		if (sb.length() == beforeLength + 1) {
+			expressionField.setCaretPosition(caretPosition + 1);
+		} else if (sb.length() == beforeLength + 2) {
+			expressionField.setCaretPosition(caretPosition + 2);
+		} else if (sb.length() == beforeLength + 3) {
+			expressionField.setCaretPosition(caretPosition + 3);
+		} else if (sb.length() == beforeLength) {
+			expressionField.setCaretPosition(caretPosition);
+		} else if (sb.length() == beforeLength - 1) {
+			expressionField.setCaretPosition(caretPosition - 1);
+		} else {
+			expressionField.setCaretPosition(0);
+		}
 	}
 }

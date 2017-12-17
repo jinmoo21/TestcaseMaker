@@ -10,7 +10,7 @@ public class MCDC {
 	private String[][] zeroTable;
 	private LinkedList<Item> trueQueue;
 	private LinkedList<Item> falseQueue;
-	
+
 	MCDC(String expression, int operandSize) {
 		this.expression = expression;
 		this.operandSize = operandSize;
