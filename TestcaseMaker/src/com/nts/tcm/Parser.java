@@ -98,7 +98,7 @@ public class Parser {
 				}
 				System.out.println(i + 1 + "을 큐에 저장");*/
 			} else if (expression.substring(i, i + 1).equals(")")) {
-				System.out.println(i + ") 끝");
+				// System.out.println(i + ") 끝");
 			} else {
 				sb.append(expression.substring(i, i + 1));
 			}

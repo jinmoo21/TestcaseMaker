@@ -10,6 +10,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -19,6 +20,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class Controller extends JFrame implements ActionListener {
@@ -47,12 +49,13 @@ public class Controller extends JFrame implements ActionListener {
 	private JButton orBtn;
 	private final String orBtnText = "OR";
 	private final String orBtnToolTip = "OR 연산을 추가합니다..";
-	private JButton leftParenthesisBtn;
-	private final String leftParenthesisBtnText = "(";
-	private final String leftParenthesisBtnToolTip = "( 을 추가합니다.";
-	private JButton rightParenthesisBtn;
-	private final String rightParenthesisBtnText = ")";
-	private final String rightParenthesisBtnToolTip = ") 을 추가합니다.";
+	private JButton wrapInParenthesisBtn;
+	private final String wrapInParenthesisBtnText = "( )";
+	private final String wrapInParenthesisBtnToolTip = "선택한 표현식 양옆으로 괄호를 추가합니다.";
+	private JButton showHideBtn;
+	private boolean showHideFlag = false;
+	private final String[] showHideBtnText = { "∨", "∧" };
+	private final String[] showHideBtnToolTip = { "표를 펼칩니다.", "표를 접습니다." };
 	private JButton clearBtn;
 	private final String clearBtnText = "CLEAR";
 	private final String clearBtnTollTip = "작성한 표현식을 초기화합니다.";
@@ -65,9 +68,10 @@ public class Controller extends JFrame implements ActionListener {
 	private JButton mcdcBtn;
 	private final String mcdcBtnText = "MC/DC";
 	private final String mcdcBtnTollTip = "표현식에 대한 MC/DC 을 구합니다.";
+	private boolean valueFlag = false;
 	private JPanel bottomPanel;
 	private DefaultTableModel initialTable;
-	private final String[] columnNames = { "1", "0" };
+	private final String[] columnNames = { "Result", "TRUE", "FALSE" };
 	public Object rowData[][];
 
 	public Controller() {
@@ -110,36 +114,6 @@ public class Controller extends JFrame implements ActionListener {
 		centetPanel.setLayout(new GridLayout(2, 4, 10, 10));
 		centetPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 		this.add("Center", centetPanel);
-		// AND 버튼
-		andBtn = new JButton(andBtnText);
-		andBtn.addActionListener(this);
-		andBtn.setToolTipText(andBtnToolTip);
-		centetPanel.add(andBtn);
-		// OR 버튼
-		orBtn = new JButton(orBtnText);
-		orBtn.addActionListener(this);
-		orBtn.setToolTipText(orBtnToolTip);
-		centetPanel.add(orBtn);
-		// ( 버튼
-		leftParenthesisBtn = new JButton(leftParenthesisBtnText);
-		leftParenthesisBtn.addActionListener(this);
-		leftParenthesisBtn.setToolTipText(leftParenthesisBtnToolTip);
-		centetPanel.add(leftParenthesisBtn);
-		// ) 버튼
-		rightParenthesisBtn = new JButton(rightParenthesisBtnText);
-		rightParenthesisBtn.addActionListener(this);
-		rightParenthesisBtn.setToolTipText(rightParenthesisBtnToolTip);
-		centetPanel.add(rightParenthesisBtn);
-		// 초기화 버튼
-		clearBtn = new JButton(clearBtnText);
-		clearBtn.addActionListener(this);
-		clearBtn.setToolTipText(clearBtnTollTip);
-		centetPanel.add(clearBtn);
-		// 지우기 버튼
-		cancelBtn = new JButton(cancelBtnText);
-		cancelBtn.addActionListener(this);
-		cancelBtn.setToolTipText(cancelBtnTollTip);
-		centetPanel.add(cancelBtn);
 		// MCC 버튼
 		mccBtn = new JButton(mccBtnText);
 		mccBtn.addActionListener(this);
@@ -150,17 +124,52 @@ public class Controller extends JFrame implements ActionListener {
 		mcdcBtn.addActionListener(this);
 		mcdcBtn.setToolTipText(mcdcBtnTollTip);
 		centetPanel.add(mcdcBtn);
+		// 초기화 버튼
+		clearBtn = new JButton(clearBtnText);
+		clearBtn.addActionListener(this);
+		clearBtn.setToolTipText(clearBtnTollTip);
+		centetPanel.add(clearBtn);
+		// 지우기 버튼
+		cancelBtn = new JButton(cancelBtnText);
+		cancelBtn.addActionListener(this);
+		cancelBtn.setToolTipText(cancelBtnTollTip);
+		centetPanel.add(cancelBtn);
+		// AND 버튼
+		andBtn = new JButton(andBtnText);
+		andBtn.addActionListener(this);
+		andBtn.setToolTipText(andBtnToolTip);
+		centetPanel.add(andBtn);
+		// OR 버튼
+		orBtn = new JButton(orBtnText);
+		orBtn.addActionListener(this);
+		orBtn.setToolTipText(orBtnToolTip);
+		centetPanel.add(orBtn);
+		// Wrap In Parenthesis 버튼
+		wrapInParenthesisBtn = new JButton(wrapInParenthesisBtnText);
+		wrapInParenthesisBtn.addActionListener(this);
+		wrapInParenthesisBtn.setToolTipText(wrapInParenthesisBtnToolTip);
+		centetPanel.add(wrapInParenthesisBtn);
+		// ) 버튼
+		showHideBtn = new JButton(showHideBtnText[0]);
+		showHideBtn.addActionListener(this);
+		showHideBtn.setToolTipText(showHideBtnToolTip[0]);
+		centetPanel.add(showHideBtn);
 		// 표 영역
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1, 1));
 		bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
-		bottomPanel.setSize(new Dimension(100, 100));
 		this.add("South", bottomPanel);
 		// 표
+//		DefaultTableCellRenderer centerAlignment = new DefaultTableCellRenderer();
+//		centerAlignment.setHorizontalAlignment(JLabel.CENTER);
 		initialTable = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(initialTable);
+//		table.getColumn("Result").setCellRenderer(centerAlignment);
+		table.setPreferredScrollableViewportSize(new Dimension(initialWidth, 100));
+		table.getColumnModel().getColumn(0).setWidth(200);
 		JScrollPane scrollPane = new JScrollPane(table);
 		bottomPanel.add(scrollPane);
+		bottomPanel.setVisible(Boolean.FALSE);
 		setVisible(true);
 	}
 
@@ -190,6 +199,10 @@ public class Controller extends JFrame implements ActionListener {
 				}
 				initialTable.addRow(v);
 			}
+			showHideFlag = Boolean.TRUE;
+			bottomPanel.setVisible(Boolean.TRUE);
+			showHideBtn.setText(showHideBtnText[1]);
+			showHideBtn.setToolTipText(showHideBtnToolTip[1]);
 		} else if (e.getSource().equals(mcdcBtn) && sb.length() != 0) {
 			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
@@ -214,6 +227,10 @@ public class Controller extends JFrame implements ActionListener {
 				}
 				initialTable.addRow(v);
 			}
+			showHideFlag = Boolean.TRUE;
+			bottomPanel.setVisible(Boolean.TRUE);
+			showHideBtn.setText(showHideBtnText[1]);
+			showHideBtn.setToolTipText(showHideBtnToolTip[1]);
 		} else if (e.getSource().equals(andBtn)) {
 			if (caretPosition == 0) {
 				sb.insert(caretPosition, baseCondition);
@@ -236,28 +253,33 @@ public class Controller extends JFrame implements ActionListener {
 				sb.insert(caretPosition, "|");
 				sb.insert(caretPosition + 1, baseCondition);
 			}
-		} else if (e.getSource().equals(leftParenthesisBtn)) {
-			sb.insert(caretPosition, "(");
-		} else if (e.getSource().equals(rightParenthesisBtn)) {
-			sb.insert(caretPosition, ")");
-		} else if (e.getSource().equals(clearBtn)) {
-//			sb.setLength(0);
-//			initialTable.setNumRows(0);
-/*
- * wrap an expression in parenthesis
-*/
+		} else if (e.getSource().equals(wrapInParenthesisBtn)) {
 			String selectedText = expressionField.getSelectedText();
 			if (selectedText != null) {
 				int start = expressionField.getSelectionStart();
 				int end = expressionField.getSelectionEnd();
 				sb.replace(start, end, "(" + selectedText + ")");
 			}
+		} else if (e.getSource().equals(clearBtn)) {
+			sb.setLength(0);
+			initialTable.setNumRows(0);
 		} else if (e.getSource().equals(cancelBtn)) {
 			if (caretPosition > 0) {
 				sb.deleteCharAt(caretPosition - 1);
 			}
 		} else if (e.getSource().equals(exitBtn)) {
 			System.exit(0);
+		} else if (e.getSource().equals(showHideBtn)) {
+			showHideFlag = !showHideFlag;
+			if (showHideFlag) {
+				bottomPanel.setVisible(showHideFlag);
+				showHideBtn.setText(showHideBtnText[1]);
+				showHideBtn.setToolTipText(showHideBtnToolTip[1]);
+			} else {
+				bottomPanel.setVisible(showHideFlag);
+				showHideBtn.setText(showHideBtnText[0]);
+				showHideBtn.setToolTipText(showHideBtnToolTip[0]);
+			}
 		}
 		expressionField.setText(sb.toString());
 		expressionField.requestFocus();
