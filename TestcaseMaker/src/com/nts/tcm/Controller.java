@@ -1,10 +1,17 @@
 package com.nts.tcm;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -19,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -38,6 +46,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final String fileMenuText = "파일";
 	private JMenuItem saveAsBtn;
 	private final String saveAsText = "저장";
+	private FileDialog saveDialog;
 	private JMenuItem exitBtn;
 	private final String exitText = "종료";
 	private JPanel topPanel;
@@ -75,6 +84,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final String mcdcBtnText = "MC/DC";
 	private final String mcdcBtnTollTip = "표현식에 대한 MC/DC 을 구합니다.";
 	private DefaultTableModel initialTable;
+	private JTable table;
 	private final String[] columnNames = { "TRUE", "FALSE" };
 	private JScrollPane scrollPane;
 	private final int scrollPaneHeight = 150;
@@ -184,10 +194,15 @@ public class Controller extends JFrame implements ActionListener {
 //		bottomPanel.setBounds(5, 400, expressionFieldWidth, 300);
 //		this.add(bottomPanel);
 		// 표
-//		DefaultTableCellRenderer centerAlignment = new DefaultTableCellRenderer();
-//		centerAlignment.setHorizontalAlignment(JLabel.CENTER);
+		DefaultTableCellRenderer centerAlignment = new DefaultTableCellRenderer();
+		centerAlignment.setHorizontalAlignment(SwingConstants.CENTER);
 		initialTable = new DefaultTableModel(rowData, columnNames);
-		JTable table = new JTable(initialTable);
+		table = new JTable(initialTable);
+		table.getTableHeader().setDefaultRenderer(centerAlignment);
+		table.getTableHeader().setReorderingAllowed(Boolean.FALSE);
+		table.getTableHeader().setResizingAllowed(Boolean.FALSE);
+		table.setRowHeight(25);
+		table.setEnabled(Boolean.FALSE);
 //		table.getColumn("Result").setCellRenderer(centerAlignment);
 //		table.setPreferredScrollableViewportSize(new Dimension(expressionFieldWidth, 300));
 //		table.getColumnModel().getColumn(0).setWidth(200);
@@ -230,9 +245,9 @@ public class Controller extends JFrame implements ActionListener {
 					}
 					initialTable.addRow(v);
 				}
-				showHideFlag = Boolean.TRUE;
+				showHideFlag = true;
 				setBounds(getX(),getY(), initialWidth, initialHeight + scrollPaneHeight);
-				scrollPane.setVisible(Boolean.TRUE);
+				scrollPane.setVisible(true);
 				showHideBtn.setText(showHideBtnText[1]);
 				showHideBtn.setToolTipText(showHideBtnToolTip[1]);
 			}
@@ -263,9 +278,9 @@ public class Controller extends JFrame implements ActionListener {
 					}
 					initialTable.addRow(v);
 				}
-				showHideFlag = Boolean.TRUE;
+				showHideFlag = true;
 				setBounds(getX(),getY(), initialWidth, initialHeight + scrollPaneHeight);
-				scrollPane.setVisible(Boolean.TRUE);
+				scrollPane.setVisible(true);
 				showHideBtn.setText(showHideBtnText[1]);
 				showHideBtn.setToolTipText(showHideBtnToolTip[1]);
 			}
@@ -321,7 +336,20 @@ public class Controller extends JFrame implements ActionListener {
 				showHideBtn.setToolTipText(showHideBtnToolTip[0]);
 			}
 		} else if (e.getSource().equals(saveAsBtn)) {
+			saveDialog = new FileDialog(this, "저장", FileDialog.SAVE);
+			saveDialog.setVisible(true);
+			String path = saveDialog.getDirectory() + saveDialog.getFile();
+			/*
+			try {
+				FileWriter fw = new FileWriter(fileName + ".xlsx");
+				BufferedWriter bw = new BufferedWriter(fw);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
+			*/
+			Save.toXLSXFile(table, path);
 		}
 		expressionField.setText(sb.toString());
 		expressionField.requestFocus();
