@@ -17,11 +17,13 @@ public class Save {
 	public static void toXLSXFile(JTable table, String path) {
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet(sheetName);
-		for (int i = 0; i < 5; ++i) {
+		for (int i = 0; i < table.getRowCount(); ++i) {
 			XSSFRow row = sheet.createRow(i);
-			for (int j = 0; j < 5; ++j) {
+			for (int j = 0; j < table.getColumnCount(); ++j) {
 				XSSFCell cell = row.createCell(j);
-				cell.setCellValue(table.getValueAt(i, j).toString());
+				if (table.getValueAt(i, j) != null) {
+					cell.setCellValue(table.getValueAt(i, j).toString());
+				}
 			}
 		}
 		try {

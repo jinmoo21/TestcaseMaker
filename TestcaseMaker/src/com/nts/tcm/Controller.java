@@ -10,12 +10,14 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -29,6 +31,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -336,20 +340,21 @@ public class Controller extends JFrame implements ActionListener {
 				showHideBtn.setToolTipText(showHideBtnToolTip[0]);
 			}
 		} else if (e.getSource().equals(saveAsBtn)) {
-			saveDialog = new FileDialog(this, "저장", FileDialog.SAVE);
-			saveDialog.setVisible(true);
-			String path = saveDialog.getDirectory() + saveDialog.getFile();
-			/*
-			try {
-				FileWriter fw = new FileWriter(fileName + ".xlsx");
-				BufferedWriter bw = new BufferedWriter(fw);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+//			saveDialog = new FileDialog(this, "저장", FileDialog.SAVE);
+//			saveDialog.setVisible(true);
+			JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+			jfc.setCurrentDirectory(new File("/"));
+			jfc.setAcceptAllFileFilterUsed(false);
+			jfc.setDialogTitle("저장");
+			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			jfc.setFileFilter(new FileNameExtensionFilter("Excel 통합 문서 (*.xlsx)", "xlsx"));
+			int val = jfc.showSaveDialog(this);
+			if (val == JFileChooser.APPROVE_OPTION) {
+				String path = jfc.getSelectedFile().toString();
+				Save.toXLSXFile(table, path);
+			} else if (val == JFileChooser.CANCEL_OPTION) {
+				System.out.println("do nothing");
 			}
-			
-			*/
-			Save.toXLSXFile(table, path);
 		}
 		expressionField.setText(sb.toString());
 		expressionField.requestFocus();
