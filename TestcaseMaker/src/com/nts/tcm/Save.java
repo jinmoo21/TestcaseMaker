@@ -15,6 +15,9 @@ public class Save {
 	private static final String sheetName = "SheetName";
 	
 	public static void toXLSXFile(JTable table, String path) {
+		if (path.toString().endsWith(excelFormat)) {
+			path = path.toString().substring(0, (path.toString().length() - excelFormat.length()));
+		}
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet(sheetName);
 		for (int i = 0; i < table.getRowCount(); ++i) {

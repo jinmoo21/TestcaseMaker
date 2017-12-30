@@ -261,7 +261,7 @@ public class Controller extends JFrame implements ActionListener {
 			parser.removeParenthesis();
 			parser.parseExpression();
 			if (parser.getOperandSize() > 10) {
-				JOptionPane.showMessageDialog(null, "표현식의 조건을 10개 이하로 입력해주세요.", title, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "표현식의 조건을 10개 이하로 입력해주세요.", title, JOptionPane.WARNING_MESSAGE);
 			} else {
 				MCDC mcdc = new MCDC(parser.getExpression(), parser.getOperandSize());
 				mcdc.setDiagonalValue();
@@ -287,6 +287,14 @@ public class Controller extends JFrame implements ActionListener {
 				scrollPane.setVisible(true);
 				showHideBtn.setText(showHideBtnText[1]);
 				showHideBtn.setToolTipText(showHideBtnToolTip[1]);
+				
+				
+				for (int i = 0; i < table.getRowCount(); ++i) {
+					for (int j = 0; j < table.getRowCount(); ++j) {
+						System.out.println(table.getValueAt(i, 0) != null ? table.getValueAt(i, 0) : "");
+						System.out.println(table.getValueAt(j, 1) != null ? table.getValueAt(j, 1) : "");
+					}
+				}
 			}
 		} else if (e.getSource().equals(andBtn)) {
 			if (caretPosition == 0) {
@@ -342,19 +350,29 @@ public class Controller extends JFrame implements ActionListener {
 		} else if (e.getSource().equals(saveAsBtn)) {
 //			saveDialog = new FileDialog(this, "저장", FileDialog.SAVE);
 //			saveDialog.setVisible(true);
-			JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+			JFileChooser jfc = new JFileChooser();
 			jfc.setCurrentDirectory(new File("/"));
 			jfc.setAcceptAllFileFilterUsed(false);
 			jfc.setDialogTitle("저장");
 			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			jfc.setSelectedFile(new File("제목 없음.xlsx"));
 			jfc.setFileFilter(new FileNameExtensionFilter("Excel 통합 문서 (*.xlsx)", "xlsx"));
-			int val = jfc.showSaveDialog(this);
+			int val = jfc.showSaveDialog(null);
+			// while (val != JFileChooser.CANCEL_OPTION || true) {
 			if (val == JFileChooser.APPROVE_OPTION) {
 				String path = jfc.getSelectedFile().toString();
+					/*if (path.exists()) {
+						int val2 = JOptionPane.showConfirmDialog(this, path + "이 (가) 이미 있습니다.\n바꾸시겠습니까?", "다른 이름으로 저장 확인", JOptionPane.YES_NO_OPTION);
+						if (val2 == JOptionPane.YES_OPTION) {
+							Save.toXLSXFile(table, path);
+							break;
+						}
+					} else {*/
 				Save.toXLSXFile(table, path);
-			} else if (val == JFileChooser.CANCEL_OPTION) {
-				System.out.println("do nothing");
+					/*	break;
+					}*/
 			}
+			// }
 		}
 		expressionField.setText(sb.toString());
 		expressionField.requestFocus();
