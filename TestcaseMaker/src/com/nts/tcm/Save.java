@@ -15,13 +15,18 @@ public class Save {
 	private static final String sheetName = "SheetName";
 	
 	public static void toXLSXFile(JTable table, String path) {
-		if (path.toString().endsWith(excelFormat)) {
-			path = path.toString().substring(0, (path.toString().length() - excelFormat.length()));
+		if (path.endsWith(excelFormat)) {
+			path = path.substring(0, (path.length() - excelFormat.length()));
 		}
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet(sheetName);
+		XSSFRow row = sheet.createRow(0);
+		for (int i = 0; i < table.getColumnCount(); ++i) {
+			XSSFCell cell = row.createCell(i);
+			cell.setCellValue(Controller.columnNames[i]);
+		}
 		for (int i = 0; i < table.getRowCount(); ++i) {
-			XSSFRow row = sheet.createRow(i);
+			row = sheet.createRow(i + 1);
 			for (int j = 0; j < table.getColumnCount(); ++j) {
 				XSSFCell cell = row.createCell(j);
 				if (table.getValueAt(i, j) != null) {

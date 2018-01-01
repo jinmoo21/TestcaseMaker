@@ -50,7 +50,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final String fileMenuText = "파일";
 	private JMenuItem saveAsBtn;
 	private final String saveAsText = "저장";
-	private FileDialog saveDialog;
+//	private FileDialog saveDialog;
 	private JMenuItem exitBtn;
 	private final String exitText = "종료";
 	private JPanel topPanel;
@@ -89,7 +89,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final String mcdcBtnTollTip = "표현식에 대한 MC/DC 을 구합니다.";
 	private DefaultTableModel initialTable;
 	private JTable table;
-	private final String[] columnNames = { "TRUE", "FALSE" };
+	public static final String[] columnNames = { "TRUE", "FALSE" };
 	private JScrollPane scrollPane;
 	private final int scrollPaneHeight = 150;
 	public Object rowData[][];
@@ -126,7 +126,9 @@ public class Controller extends JFrame implements ActionListener {
 		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 //		this.add("North", topPanel);
 		// 텍스트필드
-		expressionField = new JTextField();
+		expressionField = new JTextField() {
+			
+		};
 		expressionField.setToolTipText(expressionToolTip);
 		expressionField.setFont(new Font("arian", Font.BOLD, 20));
 		expressionField.setBounds(5, 5, longWidth, expressionFieldHeight);
