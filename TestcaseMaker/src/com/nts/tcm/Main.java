@@ -2,6 +2,6 @@ package com.nts.tcm;
 
 public class Main {
 	public static void main(String[] args) {
-		new Controller();
+		new GUI();
 	}
 }

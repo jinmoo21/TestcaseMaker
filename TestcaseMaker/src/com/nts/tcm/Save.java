@@ -12,7 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Save {
 	private static final String excelFormat = ".xlsx";
-	private static final String sheetName = "SheetName";
+	private static final String sheetName = "Sheet1";
 	
 	public static void toXLSXFile(JTable table, String path) {
 		if (path.endsWith(excelFormat)) {
@@ -23,7 +23,7 @@ public class Save {
 		XSSFRow row = sheet.createRow(0);
 		for (int i = 0; i < table.getColumnCount(); ++i) {
 			XSSFCell cell = row.createCell(i);
-			cell.setCellValue(Controller.columnNames[i]);
+			cell.setCellValue(GUI.columnNames[i]);
 		}
 		for (int i = 0; i < table.getRowCount(); ++i) {
 			row = sheet.createRow(i + 1);

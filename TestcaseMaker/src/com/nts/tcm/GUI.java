@@ -1,25 +1,16 @@
 package com.nts.tcm;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FileDialog;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -32,11 +23,10 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-public class Controller extends JFrame implements ActionListener {
+public class GUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 4349430279354340298L;
 	private final static String title = "MCC MC/DC 계산기";
 	private final int initialXPosition = 100;
@@ -50,7 +40,6 @@ public class Controller extends JFrame implements ActionListener {
 	private final String fileMenuText = "파일";
 	private JMenuItem saveAsBtn;
 	private final String saveAsText = "저장";
-//	private FileDialog saveDialog;
 	private JMenuItem exitBtn;
 	private final String exitText = "종료";
 	private JPanel topPanel;
@@ -58,7 +47,7 @@ public class Controller extends JFrame implements ActionListener {
 	private final int longWidth = 315;
 	private final int expressionFieldHeight = 50; 
 	private final String expressionToolTip = "표현식을 입력하거나 버튼을 눌러 표현식을 작성하세요.";
-	private char baseCondition = 'A';
+	private char baseCondition = 'C';
 	private JPanel centerPanel;
 	private JButton andBtn;
 	private final String andBtnText = "AND";
@@ -89,12 +78,12 @@ public class Controller extends JFrame implements ActionListener {
 	private final String mcdcBtnTollTip = "표현식에 대한 MC/DC 을 구합니다.";
 	private DefaultTableModel initialTable;
 	private JTable table;
-	public static final String[] columnNames = { "TRUE", "FALSE" };
+	public static final String[] columnNames = { "R = TRUE", "R = FALSE" };
 	private JScrollPane scrollPane;
 	private final int scrollPaneHeight = 150;
 	public Object rowData[][];
 
-	public Controller() {
+	public GUI() {
 		// Frame
 		super(title);
 		try {
@@ -126,9 +115,7 @@ public class Controller extends JFrame implements ActionListener {
 		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 //		this.add("North", topPanel);
 		// 텍스트필드
-		expressionField = new JTextField() {
-			
-		};
+		expressionField = new JTextField();
 		expressionField.setToolTipText(expressionToolTip);
 		expressionField.setFont(new Font("arian", Font.BOLD, 20));
 		expressionField.setBounds(5, 5, longWidth, expressionFieldHeight);
@@ -289,14 +276,13 @@ public class Controller extends JFrame implements ActionListener {
 				scrollPane.setVisible(true);
 				showHideBtn.setText(showHideBtnText[1]);
 				showHideBtn.setToolTipText(showHideBtnToolTip[1]);
-				
-				
+				/*
 				for (int i = 0; i < table.getRowCount(); ++i) {
 					for (int j = 0; j < table.getRowCount(); ++j) {
 						System.out.println(table.getValueAt(i, 0) != null ? table.getValueAt(i, 0) : "");
 						System.out.println(table.getValueAt(j, 1) != null ? table.getValueAt(j, 1) : "");
 					}
-				}
+				}*/
 			}
 		} else if (e.getSource().equals(andBtn)) {
 			if (caretPosition == 0) {

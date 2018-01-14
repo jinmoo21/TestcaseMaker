@@ -8,7 +8,6 @@ public class Parser {
 	private int operandSize;
 	private ArrayList<String> inOrder;
 	private ArrayList<String> postOrder;
-	private ArrayList<Integer> a; 
 
 	Parser(String expression) {
 		this.expression = expression;
@@ -88,7 +87,6 @@ public class Parser {
 	
 	public void removeParenthesis() {
 		StringBuilder sb = new StringBuilder();
-		a = new ArrayList<Integer>();
 		for (int i = 0; i < expression.length(); ++i) {
 			if (expression.substring(i, i + 1).equals("(")) {
 				/*System.out.println(i + "( 시작");
