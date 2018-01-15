@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.Vector;
 
@@ -44,6 +46,8 @@ public class GUI extends JFrame implements ActionListener {
 	private final String exitText = "종료";
 	private JPanel topPanel;
 	private JTextField expressionField;
+	private int caretPosition;
+	private StringBuilder sb;
 	private final int longWidth = 315;
 	private final int expressionFieldHeight = 50; 
 	private final String expressionToolTip = "표현식을 입력하거나 버튼을 눌러 표현식을 작성하세요.";
@@ -80,7 +84,7 @@ public class GUI extends JFrame implements ActionListener {
 	private JTable table;
 	public static final String[] columnNames = { "R = TRUE", "R = FALSE" };
 	private JScrollPane scrollPane;
-	private final int scrollPaneHeight = 150;
+	private final int scrollPaneHeight = 300;
 	public Object rowData[][];
 
 	public GUI() {
@@ -119,6 +123,7 @@ public class GUI extends JFrame implements ActionListener {
 		expressionField.setToolTipText(expressionToolTip);
 		expressionField.setFont(new Font("arian", Font.BOLD, 20));
 		expressionField.setBounds(5, 5, longWidth, expressionFieldHeight);
+		caretPosition = 0;
 		this.add(expressionField);
 //		topPanel.add(expressionField);
 		// 버튼 영역
@@ -151,6 +156,52 @@ public class GUI extends JFrame implements ActionListener {
 		cancelBtn = new JButton(cancelBtnText);
 		cancelBtn.setBounds(245, 60, btnWidth, btnHeight);
 		cancelBtn.addActionListener(this);
+		cancelBtn.addMouseListener(new MouseListener() {
+			boolean mousePressed = false;
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				mousePressed = false;
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						mousePressed = true;
+						while (mousePressed) {
+							if (caretPosition > 0) {
+								int beforeLength = sb.length();
+								System.out.println(beforeLength);
+								sb.setLength(beforeLength - 1);
+								setCaretPosition(sb.toString(), beforeLength);
+							}
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				}).start();
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+		});
 		cancelBtn.setToolTipText(cancelBtnTollTip);
 		this.add(cancelBtn);
 //		centerPanel.add(cancelBtn);
@@ -194,7 +245,7 @@ public class GUI extends JFrame implements ActionListener {
 		table.getTableHeader().setDefaultRenderer(centerAlignment);
 		table.getTableHeader().setReorderingAllowed(Boolean.FALSE);
 		table.getTableHeader().setResizingAllowed(Boolean.FALSE);
-		table.setRowHeight(25);
+		table.setRowHeight(35);
 		table.setEnabled(Boolean.FALSE);
 //		table.getColumn("Result").setCellRenderer(centerAlignment);
 //		table.setPreferredScrollableViewportSize(new Dimension(expressionFieldWidth, 300));
@@ -208,18 +259,18 @@ public class GUI extends JFrame implements ActionListener {
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		StringBuilder sb = new StringBuilder(expressionField.getText());
+		sb = new StringBuilder(expressionField.getText());
 		int beforeLength = sb.length();
-		int caretPosition = expressionField.getCaretPosition();
+		caretPosition = expressionField.getCaretPosition();
 		if (e.getSource().equals(mccBtn) && sb.length() != 0) {
 			initialTable.setNumRows(0);
 			Parser parser = new Parser(expressionField.getText());
 			parser.parseExpression();
 			if (parser.getOperandSize() > 10) {
-				JOptionPane.showMessageDialog(null, "표현식의 조건을 10개 이하로 입력해주세요.", title, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "표현식의 조건을 10개 이하로 입력해주세요.", title, JOptionPane.WARNING_MESSAGE);
 			} else {
 				MCC mcc =  new MCC(parser.getPostOrder(), parser.getOperandSize());
 				mcc.setTable(mcc.getConditions(), mcc.getResult());
@@ -315,11 +366,7 @@ public class GUI extends JFrame implements ActionListener {
 			}
 		} else if (e.getSource().equals(clearBtn)) {
 			sb.setLength(0);
-			initialTable.setNumRows(0);
-		} else if (e.getSource().equals(cancelBtn)) {
-			if (caretPosition > 0) {
-				sb.deleteCharAt(caretPosition - 1);
-			}
+			initialTable.setNumRows(0);			
 		} else if (e.getSource().equals(exitBtn)) {
 			System.exit(0);
 		} else if (e.getSource().equals(showHideBtn)) {
@@ -362,6 +409,25 @@ public class GUI extends JFrame implements ActionListener {
 			}
 			// }
 		}
+		setCaretPosition(sb.toString(), beforeLength);
+		/*expressionField.setText(sb.toString());
+		expressionField.requestFocus();
+		if (sb.length() == beforeLength + 1) {
+			expressionField.setCaretPosition(caretPosition + 1);
+		} else if (sb.length() == beforeLength + 2) {
+			expressionField.setCaretPosition(caretPosition + 2);
+		} else if (sb.length() == beforeLength + 3) {
+			expressionField.setCaretPosition(caretPosition + 3);
+		} else if (sb.length() == beforeLength) {
+			expressionField.setCaretPosition(caretPosition);
+		} else if (sb.length() == beforeLength - 1) {
+			expressionField.setCaretPosition(caretPosition - 1);
+		} else {
+			expressionField.setCaretPosition(0);
+		}*/
+	}
+	
+	public void setCaretPosition(String s, int beforeLength) {
 		expressionField.setText(sb.toString());
 		expressionField.requestFocus();
 		if (sb.length() == beforeLength + 1) {
