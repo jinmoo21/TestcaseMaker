@@ -4,8 +4,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.Vector;
 
@@ -34,7 +32,7 @@ public class GUI extends JFrame implements ActionListener {
 	private final int initialXPosition = 100;
 	private final int initialYPosition = 100;
 	private final int initialWidth = 330;
-	private final int initialHeight = 190;
+	private final int initialHeight = 195;
 	private final int btnWidth = 75;
 	private final int btnHeight = 35;
 	private JMenuBar menuBar;
@@ -72,7 +70,7 @@ public class GUI extends JFrame implements ActionListener {
 	private final String clearBtnText = "CLEAR";
 	private final String clearBtnTollTip = "작성한 표현식을 초기화합니다.";
 	private JButton cancelBtn;
-	private final String cancelBtnText = "BACKSPACE";
+	private final String cancelBtnText = "←";
 	private final String cancelBtnTollTip = "지우기";
 	private JButton mccBtn;
 	private final String mccBtnText = "MCC";
@@ -82,7 +80,7 @@ public class GUI extends JFrame implements ActionListener {
 	private final String mcdcBtnTollTip = "표현식에 대한 MC/DC 을 구합니다.";
 	private DefaultTableModel initialTable;
 	private JTable table;
-	public static final String[] columnNames = { "R = TRUE", "R = FALSE" };
+	public static final String[] columnNames = { "1", "0" };
 	private JScrollPane scrollPane;
 	private final int scrollPaneHeight = 300;
 	public Object rowData[][];
@@ -156,52 +154,6 @@ public class GUI extends JFrame implements ActionListener {
 		cancelBtn = new JButton(cancelBtnText);
 		cancelBtn.setBounds(245, 60, btnWidth, btnHeight);
 		cancelBtn.addActionListener(this);
-		cancelBtn.addMouseListener(new MouseListener() {
-			boolean mousePressed = false;
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				mousePressed = false;
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						mousePressed = true;
-						while (mousePressed) {
-							if (caretPosition > 0) {
-								int beforeLength = sb.length();
-								System.out.println(beforeLength);
-								sb.setLength(beforeLength - 1);
-								setCaretPosition(sb.toString(), beforeLength);
-							}
-							try {
-								Thread.sleep(1000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				}).start();
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
-		});
 		cancelBtn.setToolTipText(cancelBtnTollTip);
 		this.add(cancelBtn);
 //		centerPanel.add(cancelBtn);
@@ -367,6 +319,12 @@ public class GUI extends JFrame implements ActionListener {
 		} else if (e.getSource().equals(clearBtn)) {
 			sb.setLength(0);
 			initialTable.setNumRows(0);			
+		} else if (e.getSource().equals(cancelBtn)) {
+			beforeLength = sb.length();
+			if (beforeLength != 0) {
+				sb.setLength(beforeLength - 1);
+				setCaretPosition(sb.toString(), beforeLength);
+			}
 		} else if (e.getSource().equals(exitBtn)) {
 			System.exit(0);
 		} else if (e.getSource().equals(showHideBtn)) {
@@ -410,21 +368,6 @@ public class GUI extends JFrame implements ActionListener {
 			// }
 		}
 		setCaretPosition(sb.toString(), beforeLength);
-		/*expressionField.setText(sb.toString());
-		expressionField.requestFocus();
-		if (sb.length() == beforeLength + 1) {
-			expressionField.setCaretPosition(caretPosition + 1);
-		} else if (sb.length() == beforeLength + 2) {
-			expressionField.setCaretPosition(caretPosition + 2);
-		} else if (sb.length() == beforeLength + 3) {
-			expressionField.setCaretPosition(caretPosition + 3);
-		} else if (sb.length() == beforeLength) {
-			expressionField.setCaretPosition(caretPosition);
-		} else if (sb.length() == beforeLength - 1) {
-			expressionField.setCaretPosition(caretPosition - 1);
-		} else {
-			expressionField.setCaretPosition(0);
-		}*/
 	}
 	
 	public void setCaretPosition(String s, int beforeLength) {
